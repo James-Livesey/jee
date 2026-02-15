@@ -1,11 +1,18 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/ioctl.h>
+#include <signal.h>
 #include <termios.h>
 #include <poll.h>
 
 #include "term.h"
 
 struct termios original_term;
+
+void interrupt_handler(int signal_code) {
+    exit_term_mode();
+    exit(0);
+}
 
 void enter_term_mode() {
     struct termios term;
@@ -14,15 +21,20 @@ void enter_term_mode() {
     
     original_term = term;
 
+    term.c_iflag &= ~(IXON | IXOFF);
     term.c_lflag &= ~(ICANON | ECHO);
 
     tcsetattr(fileno(stdin), TCSANOW, &term);
 
     printf("\e[?1049h"); // Enter alternate screen
+    printf("\e[?1003h"); // Track all mouse events
+
+    signal(SIGINT, interrupt_handler);
 }
 
 void exit_term_mode() {
     printf("\e[?1049l"); // Exit alternate screen
+    printf("\e[?1003l"); // Stop tracking all mouse events
 
     tcsetattr(fileno(stdin), TCSANOW, &original_term);
 }
