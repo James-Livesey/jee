@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <string.h>
 
 #include "vector.h"
@@ -50,8 +49,6 @@ size_t vector_push(Vector* vector, const void* elem) {
     vector->elems = new_elems;
 
     memcpy(vector->elems + (vector->length * vector->elem_size), elem, vector->elem_size);
-
-    printf("vl %d new %d\n", vector->length, new_length);
 
     vector->length = new_length;
 
