@@ -3,19 +3,10 @@
 
 #include "event.h"
 #include "term.h"
+#include "window.h"
 
 void dispatch_event(Event event) {
-    printf("Event %d\n", event.type);
-
-    if (event.type == EVENT_KEY_PRESS) {
-        printf("Key %c\n", event.data.as_key.utf8[0]);
-        printf("Special %d\n", event.data.as_key.special);
-        printf("Modifiers %d\n", event.data.as_key.modifiers);
-    } else {
-        printf("Pos %d %d\n", event.data.as_mouse.x, event.data.as_mouse.y);
-        printf("Button %d\n", event.data.as_mouse.button);
-        printf("Modifiers %d\n", event.data.as_mouse.modifiers);
-    }
+    dispatch_window_event(event);
 }
 
 void make_mouse_input_event() {

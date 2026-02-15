@@ -23,6 +23,10 @@ int main(int argc, char* argv[]) {
 
     window2->bounds.x = 12;
     window2->bounds.y = 12;
+    window2->min_width = 10;
+    window2->min_height = 5;
+    window2->max_width = 40;
+    window2->max_height = 15;
 
     if (!window0 || !window1 || !window2) {
         fprintf(stderr, "Couldn't create windows\n");
@@ -30,9 +34,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    clear_term();
-    redraw_windows();
-    fflush(stdout);
+    redraw_all();
 
     while (true) {
         handle_events();

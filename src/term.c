@@ -26,6 +26,7 @@ void enter_term_mode() {
 
     tcsetattr(fileno(stdin), TCSANOW, &term);
 
+    printf("\e[?25l"); // Hide cursor
     printf("\e[?1049h"); // Enter alternate screen
     printf("\e[?1003h"); // Track all mouse events
 
@@ -33,6 +34,7 @@ void enter_term_mode() {
 }
 
 void exit_term_mode() {
+    printf("\e[?25h"); // Show cursor
     printf("\e[?1049l"); // Exit alternate screen
     printf("\e[?1003l"); // Stop tracking all mouse events
 
