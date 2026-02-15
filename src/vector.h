@@ -1,3 +1,6 @@
+#ifndef VECTOR_H_
+#define VECTOR_H_
+
 #include <stdlib.h>
 #include <stdbool.h>
 
@@ -19,3 +22,5 @@ size_t vector_push(Vector* vector, const void* elem);
 bool vector_remove_index(Vector* vector, size_t index);
 bool vector_remove(Vector* vector, const void* elem);
 void vector_sort(Vector* vector, vector_sorter_t sorter);
+
+#endif
