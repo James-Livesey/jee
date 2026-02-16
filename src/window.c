@@ -1,3 +1,5 @@
+#define _XOPEN_SOURCE
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -134,7 +136,9 @@ void dispatch_window_event(Event event) {
     }
 }
 
-Window* new_window(unsigned int width, unsigned int height) {
+void default_window_handler(Window* window, Event event) {}
+
+Window* new_window(unsigned int width, unsigned int height, window_handler_t handler) {
     Window* window = malloc(sizeof(Window));
 
     if (!window) {
@@ -152,6 +156,10 @@ Window* new_window(unsigned int width, unsigned int height) {
     window->max_height = -1;
     window->z = windows.length;
     window->surface = malloc(width * height * sizeof(wchar_t));
+    window->cursor_x = 0;
+    window->cursor_y = 0;
+    window->handler = handler;
+    window->metadata = NULL;
 
     if (!window->surface) {
         return NULL;
@@ -161,10 +169,18 @@ Window* new_window(unsigned int width, unsigned int height) {
 
     vector_push(&windows, &window);
 
+    window->handler(window, (Event) {
+        .type = EVENT_WINDOW_CREATE
+    });
+
     return window;
 }
 
 bool destroy_window(Window* window) {
+    window->handler(window, (Event) {
+        .type = EVENT_WINDOW_DESTROY
+    });
+
     if (window == focused_window) {
         focused_window = NULL;
     }
@@ -185,6 +201,12 @@ int window_sorter(const void* a, const void* b) {
 void window_focus(Window* window) {
     for (size_t i = 0; i < windows.length; i++) {
         Window* current_window = *(Window**)vector_get(&windows, i);
+
+        if (current_window != window) {
+            window->handler(window, (Event) {
+                .type = EVENT_WINDOW_BLUR
+            });
+        }
         
         if (current_window->z > window->z) {
             current_window->z--;
@@ -194,6 +216,10 @@ void window_focus(Window* window) {
     window->z = windows.length - 1;
 
     focused_window = window;
+
+    window->handler(window, (Event) {
+        .type = EVENT_WINDOW_FOCUS
+    });
 
     vector_sort(&windows, window_sorter);
 }
@@ -210,6 +236,10 @@ bool window_resize(Window* window, unsigned int width, unsigned int height) {
     window->surface = new_surface;
     window->bounds.width = width;
     window->bounds.height = height;
+
+    window->handler(window, (Event) {
+        .type = EVENT_WINDOW_RESIZE
+    });
 
     return true;
 }
@@ -302,16 +332,24 @@ void window_redraw(Window* window) {
                 wstr[0] = window->surface[(inner_y * window->bounds.width) + inner_x];
                 wstr[1] = 0;
 
-                if (wstr[0] == 0) {
+                if (wstr[0] == L'\0' || wstr[0] == 0x7F) {
                     wstr[0] = ' ';
                 }
 
                 printf("%ls", wstr);
 
+                if (x_offset == window->bounds.width) {
+                    needs_set_pos = true;
+                } else {
+                    x_offset += wcwidth(wstr[0]) - 1;
+                }
+
                 continue;
             }
         }
     }
+
+    fflush(stdout);
 }
 
 void window_handle_event(Window* window, Event event) {
@@ -366,5 +404,57 @@ void window_handle_event(Window* window, Event event) {
         if (event.data.as_mouse.y == bounds.y + bounds.height - 1) {
             window_edit_mode |= WINDOW_EDIT_RESIZE_HEIGHT;
         }
+    }
+
+    if (event.type == EVENT_MOUSE_UP || event.type == EVENT_MOUSE_DOWN || event.type == EVENT_MOUSE_MOVE) {
+        if (
+            event.data.as_mouse.x >= window->bounds.x &&
+            event.data.as_mouse.y >= window->bounds.y &&
+            event.data.as_mouse.x < window->bounds.x + window->bounds.width &&
+            event.data.as_mouse.y < window->bounds.y + window->bounds.height
+        ) {
+            event.data.as_mouse.inner_x = event.data.as_mouse.x - window->bounds.x;
+            event.data.as_mouse.inner_y = event.data.as_mouse.y - window->bounds.y;
+
+            window->handler(window, event);
+        }
+
+        return;
+    }
+
+    window->handler(window, event);
+}
+
+void window_set_cursor(Window* window, unsigned int x, unsigned int y) {
+    window->cursor_x = x;
+    window->cursor_y = y;
+}
+
+void window_print_wc(Window* window, wchar_t wc) {
+    if (window->cursor_x >= window->bounds.width || wc == L'\n') {
+        window->cursor_x = 0;
+        window->cursor_y += 1;
+    }
+
+    if (wc == L'\n') {
+        return;
+    }
+
+    size_t index = (window->cursor_y * window->bounds.width) + window->cursor_x;
+
+    if (index >= window->bounds.width * window->bounds.height) {
+        window->cursor_x = 0;
+        window->cursor_y = 0;
+        index = 0;
+    }
+    
+    window->surface[index] = wc;
+    
+    window->cursor_x += wcwidth(wc);
+}
+
+void window_print_wstr(Window* window, wchar_t* wstr) {
+    while (*wstr) {
+        window_print_wc(window, *(wstr++));
     }
 }

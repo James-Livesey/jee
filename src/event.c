@@ -19,6 +19,8 @@ void make_mouse_input_event() {
         .data.as_mouse = {
             .x = mouse_x,
             .y = mouse_y,
+            .inner_x = mouse_x,
+            .inner_y = mouse_y,
             .button = BUTTON_NONE,
             .modifiers = 0
         }

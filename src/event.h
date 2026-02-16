@@ -5,6 +5,11 @@
 #include <stdbool.h>
 
 typedef enum {
+    EVENT_WINDOW_CREATE,
+    EVENT_WINDOW_DESTROY,
+    EVENT_WINDOW_FOCUS,
+    EVENT_WINDOW_BLUR,
+    EVENT_WINDOW_RESIZE,
     EVENT_KEY_PRESS,
     EVENT_MOUSE_DOWN,
     EVENT_MOUSE_UP,
@@ -63,6 +68,8 @@ typedef struct Event {
         struct {
             unsigned char x;
             unsigned char y;
+            unsigned char inner_x;
+            unsigned char inner_y;
             MouseButton button;
             ModifierKey modifiers;
         } as_mouse;

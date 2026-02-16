@@ -5,15 +5,16 @@
 #include "term.h"
 #include "event.h"
 #include "window.h"
+#include "windows/codeeditor.h"
 
 int main(int argc, char* argv[]) {
     enter_term_mode();
 
     init_windows();
 
-    Window* window0 = new_window(20, 10);
-    Window* window1 = new_window(20, 10);
-    Window* window2 = new_window(20, 10);
+    Window* window0 = new_code_editor_window(100, 30);
+    Window* window1 = new_window(20, 10, default_window_handler);
+    Window* window2 = new_window(20, 10, default_window_handler);
 
     window0->bounds.x = 4;
     window0->bounds.y = 4;

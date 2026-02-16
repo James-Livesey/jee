@@ -4,6 +4,7 @@
 #include <signal.h>
 #include <termios.h>
 #include <poll.h>
+#include <locale.h>
 
 #include "term.h"
 
@@ -31,6 +32,8 @@ void enter_term_mode() {
     printf("\e[?1003h"); // Track all mouse events
 
     signal(SIGINT, interrupt_handler);
+
+    setlocale(LC_ALL, "");
 }
 
 void exit_term_mode() {

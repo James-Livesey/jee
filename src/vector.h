@@ -6,13 +6,13 @@
 
 #include "errno.h"
 
+typedef int (*vector_sorter_t)(const void* a, const void* b);
+
 typedef struct Vector {
     size_t elem_size;
     size_t length;
     void* elems;
 } Vector;
-
-typedef int (*vector_sorter_t)(const void* a, const void* b);
 
 bool new_vector(size_t elem_size, Vector* vector);
 void* vector_get(const Vector* vector, size_t index);
