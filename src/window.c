@@ -41,7 +41,6 @@ void redraw_windows() {
 void redraw_all() {
     clear_term();
     redraw_windows();
-    fflush(stdout);
 }
 
 void dispatch_window_event(Event event) {
