@@ -75,7 +75,7 @@ void dispatch_window_event(Event event) {
                             new_width,
                             focused_window->bounds.height
                         );
-    
+
                         should_redraw = true;
                     }
                 }
@@ -95,7 +95,7 @@ void dispatch_window_event(Event event) {
                             focused_window->bounds.width,
                             new_height
                         );
-    
+
                         should_redraw = true;
                     }
                 }
@@ -172,6 +172,10 @@ Window* new_window(unsigned int width, unsigned int height, window_handler_t han
         .type = EVENT_WINDOW_CREATE
     });
 
+    window->handler(window, (Event) {
+        .type = EVENT_WINDOW_SURFACE_CLEAN
+    });
+
     return window;
 }
 
@@ -238,6 +242,10 @@ bool window_resize(Window* window, unsigned int width, unsigned int height) {
 
     window->handler(window, (Event) {
         .type = EVENT_WINDOW_RESIZE
+    });
+
+    window->handler(window, (Event) {
+        .type = EVENT_WINDOW_SURFACE_CLEAN
     });
 
     return true;
@@ -363,7 +371,7 @@ void window_handle_event(Window* window, Event event) {
             if (prev_focused_window) {
                 window_redraw(prev_focused_window);
             }
-            
+
             window_redraw(window);
             fflush(stdout);
         }
@@ -392,7 +400,7 @@ void window_handle_event(Window* window, Event event) {
             if (event.data.as_mouse.x == bounds.x) {
                 window_edit_mode |= WINDOW_EDIT_RESIZE_HEIGHT;
             }
-            
+
             if (event.data.as_mouse.x == bounds.x + bounds.width - 1) {
                 window_edit_mode |= WINDOW_EDIT_RESIZE_HEIGHT;
             } else {
@@ -446,9 +454,9 @@ void window_print_wc(Window* window, wchar_t wc) {
         window->cursor_y = 0;
         index = 0;
     }
-    
+
     window->surface[index] = wc;
-    
+
     window->cursor_x += wcwidth(wc);
 }
 

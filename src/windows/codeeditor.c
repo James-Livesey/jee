@@ -11,7 +11,7 @@ Window* new_code_editor_window(unsigned int width, unsigned int height) {
 }
 
 void code_editor_handler(Window* window, Event event) {
-    if (event.type == EVENT_WINDOW_CREATE || event.type == EVENT_WINDOW_RESIZE) {
+    if (event.type == EVENT_WINDOW_SURFACE_CLEAN) {
         wchar_t* wstr = L"Hello, world!";
 
         window_set_cursor(
