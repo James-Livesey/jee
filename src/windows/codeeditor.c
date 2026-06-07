@@ -122,5 +122,9 @@ bool code_editor_set_lines(Window* window, const wchar_t* data) {
         buffer[line_length] = L'\0';
     }
 
-    return code_editor_add_line(window, buffer);
+    bool result = code_editor_add_line(window, buffer);
+
+    free(buffer);
+
+    return result;
 }

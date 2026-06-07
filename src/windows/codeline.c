@@ -3,7 +3,7 @@
 #include "codeline.h"
 
 struct CodeLine* new_code_line(CodeEditor* editor, CodeLine* insert_before) {
-    CodeLine* line = malloc(sizeof(line));
+    CodeLine* line = malloc(sizeof(CodeLine));
 
     if (!line) {
         return NULL;
