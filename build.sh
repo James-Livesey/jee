@@ -2,4 +2,4 @@
 
 mkdir -p build
 
-gcc src/*.c src/*/*.c -o build/jee
+gcc src/*.c src/*/*.c -lm -o build/jee

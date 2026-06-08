@@ -58,6 +58,7 @@ WindowBounds window_get_outer_bounds(Window* window);
 bool window_is_occluded(Window* window, unsigned int outer_x, unsigned int outer_y);
 void window_redraw(Window* window);
 void window_handle_event(Window* window, Event event);
+void window_clear(Window* window);
 void window_set_cursor(Window* window, unsigned int x, unsigned int y);
 void window_print_wc(Window* window, wchar_t wc);
 void window_print_wstr(Window* window, wchar_t* wstr);

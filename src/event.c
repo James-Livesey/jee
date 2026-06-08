@@ -9,6 +9,14 @@ void dispatch_event(Event event) {
     dispatch_window_event(event);
 }
 
+void make_tick_event() {
+    Event event = {
+        .type = EVENT_TICK
+    };
+
+    dispatch_event(event);
+}
+
 void make_mouse_input_event() {
     char mouse_event_type = get_input_char();
     unsigned char mouse_x = get_input_char() - 33;
@@ -202,6 +210,8 @@ void make_input_event() {
 }
 
 void handle_events() {
+    make_tick_event();
+
     if (has_input()) {
         make_input_event();
     }

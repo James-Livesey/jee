@@ -44,6 +44,14 @@ void redraw_all() {
 }
 
 void dispatch_window_event(Event event) {
+    if (event.type == EVENT_TICK) {
+        for (size_t i = 0; i < windows.length; i++) {
+            Window* window = *(Window**)vector_get(&windows, i);
+
+            window_handle_event(window, event);
+        }
+    }
+
     if (event.type == EVENT_KEY_PRESS && focused_window) {
         window_handle_event(focused_window, event);
     }
@@ -161,10 +169,12 @@ Window* new_window(unsigned int width, unsigned int height, window_handler_t han
     window->metadata = NULL;
 
     if (!window->surface) {
+        free(window);
+
         return NULL;
     }
 
-    memset(window->surface, 0, width * height * sizeof(wchar_t));
+    window_clear(window);
 
     vector_push(&windows, &window);
 
@@ -430,6 +440,10 @@ void window_handle_event(Window* window, Event event) {
     }
 
     window->handler(window, event);
+}
+
+void window_clear(Window* window) {
+    memset(window->surface, 0, window->bounds.width * window->bounds.height * sizeof(wchar_t));
 }
 
 void window_set_cursor(Window* window, unsigned int x, unsigned int y) {

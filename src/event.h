@@ -5,6 +5,7 @@
 #include <stdbool.h>
 
 typedef enum {
+    EVENT_TICK,
     EVENT_WINDOW_CREATE,
     EVENT_WINDOW_DESTROY,
     EVENT_WINDOW_FOCUS,

@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
     window0->bounds.x = 4;
     window0->bounds.y = 4;
 
-    code_editor_set_lines(window0, L"Hello, world!\nThis is a test!");
+    code_editor_set_lines(window0, L"Hello, world!\nThis is a test!\nAnother line");
 
     window1->bounds.x = 8;
     window1->bounds.y = 8;

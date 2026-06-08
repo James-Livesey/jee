@@ -38,7 +38,6 @@ struct CodeLine* new_code_line(CodeEditor* editor, CodeLine* insert_before) {
     }
 
     editor->line_numbers_computed = false;
-    editor->line_number_recompute_from = line;
 
     return line;
 }
